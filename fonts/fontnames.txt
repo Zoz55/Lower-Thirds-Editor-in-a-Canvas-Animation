@@ -1,0 +1,22 @@
+Roboto
+Noto Sans
+Lato
+Montserrat
+Poppins
+Source Sans 3
+PT Sans
+Ubuntu
+Raleway
+Nunito
+Merriweather
+Playfair Display
+Noto Serif
+Work Sans
+Quicksand
+Fira Sans
+Arimo
+Bitter
+IBM Plex Sans
+Edu AU VIC WA NT Pre
+Oswald
+

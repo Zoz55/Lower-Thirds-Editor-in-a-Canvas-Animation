@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Clip-path Maker by Drag/Drop</title>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description"
+        content="https://github.com/ManolisMariakakis/Clip-path-Maker-by-Drag-Drop?tab=GPL-3.0-1-ov-file#readme">
+    <style>
+        .clipbox {
+            position: relative;
+            box-shadow: inset 0 0 0 10px #fbfcf7, inset 0 0 0 11px #d3d0c9;
+            touch-action: none;
+            width: 200px;
+            height: 200px;
+        }
+
+        .container {
+            display: flex;
+            gap: 0px;
+            align-items: flex-start;
+        }
+
+        .left-column {
+            flex: 0.15;
+            /* Occupies remaining available space */
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            /* Space between elements in the left column */
+        }
+
+        .right-column {
+            flex: 0.1;
+            display: flex;
+            justify-content: left;
+            padding-left: 10px;
+        }
+
+        #controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding-top: 10px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+    <script src="ClipPathDragMaker.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-column">
+            <div class="clipbox"></div>
+            <code class="clippath"></code>
+
+        </div>
+        <div class="right-column">
+            <div id="controls">
+                <button onclick="clipPathMaker.moveUp()">⬆</button>
+                <button onclick="clipPathMaker.moveRight()">➡</button>
+                <button onclick="clipPathMaker.moveDown()">⬇</button>
+                <button onclick="clipPathMaker.moveLeft()">⬅</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="shape-buttons" style=" position: fixed;bottom: 0;left: 0;"></div>
+
+
+    <script>
+        window.onload = function () {
+            window.clipPathMaker = new ClipPathMaker('.clipbox', '.clippath'); // Global variable to access in buttons
+            var coords = [
+                [20, 0], [80, 0], [100, 20], [100, 80],
+                [80, 100], [20, 100], [0, 80], [0, 20],
+            ];
+            clipPathMaker.makeShape(coords);
+        };
+        // Define shape configurations
+        const shapes = [
+            {
+                id: 'triangle',
+                coords: [
+                    [50, 0], [100, 100], [0, 100]
+                ],
+                svgPoints: '50,0 100,100 0,100',
+                description: 'Triangle'
+            },
+            {
+                id: 'quadrangle',
+                coords: [
+                    [0, 0], [100, 0], [100, 100], [0, 100]
+                ],
+                svgPoints: '0,0 100,0 100,100 0,100',
+                description: 'Quadrangle'
+            },
+            {
+                id: 'pentagon',
+                coords: [
+                    [50, 0], [98, 35], [80, 100], [20, 100], [2, 35]
+                ],
+                svgPoints: '50,0 98,35 80,100 20,100 2,35',
+                description: 'Pentagon'
+            },
+            {
+                id: 'hexagon',
+                coords: [
+                    [50, 0], [100, 25], [100, 75], [50, 100], [0, 75], [0, 25]
+                ],
+                svgPoints: '50,0 100,25 100,75 50,100 0,75 0,25',
+                description: 'Hexagon'
+            },
+            {
+                id: 'heptagon',
+                coords: [
+                    [50, 0],
+                    [90, 20],
+                    [100, 60],
+                    [75, 100],
+                    [25, 100],
+                    [0, 60],
+                    [10, 20]
+                ],
+                svgPoints: '50,0 90,20 100,60 75,100 25,100 0,60 10,20',
+                description: 'Heptagon'
+            },
+            {
+                id: 'octagon',
+                coords: [
+                    [30, 0], [70, 0], [100, 30], [100, 70], [70, 100], [30, 100], [0, 70], [0, 30]
+                ],
+                svgPoints: '30,0 70,0 100,30 100,70 70,100 30,100 0,70 0,30',
+                description: 'Octagon'
+            },
+            {
+                id: 'enneagon',
+                coords: [
+                    [50, 0],
+                    [83, 12],
+                    [100, 43],
+                    [94, 78],
+                    [68, 100],
+                    [32, 100],
+                    [6, 78],
+                    [0, 43],
+                    [17, 12]
+                ],
+                svgPoints: '50,0 83,12 100,43 94,78 68,100 32,100 6,78 0,43 17,12',
+                description: 'Enneagon'
+            },
+            {
+                id: "rabbet",
+                coords: [
+                    [0, 15],
+                    [15, 15],
+                    [15, 0],
+                    [85, 0],
+                    [85, 15],
+                    [100, 15],
+                    [100, 85],
+                    [85, 85],
+                    [85, 100],
+                    [15, 100],
+                    [15, 85],
+                    [0, 85]
+                ],
+                svgPoints: "0,15 15,15 15,0 85,0 85,15 100,15 100,85 85,85 85,100 15,100 15,85 0,85",
+                description: "Rabbet"
+            },
+            {
+                id: "left-arrow",
+                coords: [
+                    [40, 0],
+                    [40, 20],
+                    [100, 20],
+                    [100, 80],
+                    [40, 80],
+                    [40, 100],
+                    [0, 50]
+                ],
+                svgPoints: "40,0 40,20 100,20 100,80 40,80 40,100 0,50",
+                description: "Left Arrow"
+            },
+            {
+                id: "right-arrow",
+                coords: [
+                    [0, 20],
+                    [60, 20],
+                    [60, 0],
+                    [100, 50],
+                    [60, 100],
+                    [60, 80],
+                    [0, 80]
+                ],
+                svgPoints: "0,20 60,20 60,0 100,50 60,100 60,80 0,80",
+                description: "Right Arrow"
+            },
+            {
+                id: "left-point",
+                coords: [
+                    [25, 0],
+                    [100, 1],
+                    [100, 100],
+                    [25, 100],
+                    [0, 50]
+                ],
+                svgPoints: "25,0 100,1 100,100 25,100 0,50",
+                description: "Left Point"
+            },
+            {
+                id: "right-point",
+                coords: [
+                    [0, 0],
+                    [75, 0],
+                    [100, 50],
+                    [75, 100],
+                    [0, 100]
+                ],
+                svgPoints: "0,0 75,0 100,50 75,100 0,100",
+                description: "Right Point"
+            },
+            {
+                id: "left-chevron",
+                coords: [
+                    [100, 0],
+                    [75, 50],
+                    [100, 100],
+                    [25, 100],
+                    [0, 50],
+                    [25, 0]
+                ],
+                svgPoints: "100,0 75,50 100,100 25,100 0,50 25,0",
+                description: "Left Chevron"
+            },
+            {
+                id: "right-chevron",
+                coords: [
+                    [75, 0],
+                    [100, 50],
+                    [75, 100],
+                    [0, 100],
+                    [25, 50],
+                    [0, 0]
+                ],
+                svgPoints: "75,0 100,50 75,100 0,100 25,50 0,0",
+                description: "Right Chevron"
+            },
+            {
+                id: "star",
+                coords: [
+                    [50, 0],
+                    [61, 35],
+                    [98, 35],
+                    [68, 57],
+                    [79, 91],
+                    [50, 70],
+                    [21, 91],
+                    [32, 57],
+                    [2, 35],
+                    [39, 35]
+                ],
+                svgPoints: "50,0 61,35 98,35 68,57 79,91 50,70 21,91 32,57 2,35 39,35",
+                description: "Star"
+            },
+            {
+                id: "cross",
+                coords: [
+                    [10, 25],
+                    [35, 25],
+                    [35, 0],
+                    [65, 0],
+                    [65, 25],
+                    [90, 25],
+                    [90, 50],
+                    [65, 50],
+                    [65, 100],
+                    [35, 100],
+                    [35, 50],
+                    [10, 50]
+                ],
+                svgPoints: "10,25 35,25 35,0 65,0 65,25 90,25 90,50 65,50 65,100 35,100 35,50 10,50",
+                description: "Cross"
+            },
+            {
+                id: "bevel",
+                coords: [
+                    [15, 0],
+                    [85, 0],
+                    [100, 15],
+                    [100, 85],
+                    [85, 100],
+                    [15, 100],
+                    [0, 85],
+                    [0, 15]
+                ],
+                svgPoints: "15,0 85,0 100,15 100,85 85,100 15,100 0,85 0,15",
+                description: "Bevel"
+            },
+            {
+                id: "trapezoid",
+                coords: [[20, 0], [80, 0], [100, 100], [0, 100]],
+                svgPoints: "20,0 80,0 100,100 0,100",
+                description: "Trapezoid"
+            },
+            {
+                id: "rhombus",
+                coords: [[50, 0], [100, 50], [50, 100], [0, 50]],
+                svgPoints: "50,0 100,50 50,100 0,50",
+                description: "Rhombus"
+            },
+            {
+                id: "frame",
+                coords: [
+                    [0, 0],
+                    [0, 100],
+                    [25, 100],
+                    [25, 25],
+                    [75, 25],
+                    [75, 75],
+                    [25, 75],
+                    [25, 100],
+                    [100, 100],
+                    [100, 0]
+                ],
+                svgPoints: "0,0 0,100 25,100 25,25 75,25 75,75 25,75 25,100 100,100 100,0",
+                description: "Frame"
+            }
+
+        ];
+        // Function to create a button for each shape dynamically
+        function createShapeButtons() {
+            const buttonContainer = document.getElementById('shape-buttons');
+
+            shapes.forEach(shape => {
+                // Create button element
+                const button = document.createElement('button');
+                button.id = `set-${shape.id}-coords`;
+                button.title = shape.description;
+
+                // Set up the onclick function to call makeShape with the shape's coords
+                button.onclick = function () {
+                    clipPathMaker.makeShape(shape.coords);
+                };
+
+                // Add SVG icon to the button
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('width', '20');
+                svg.setAttribute('height', '20');
+                svg.setAttribute('viewBox', '0 0 100 100');
+
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', shape.svgPoints);
+                polygon.setAttribute('fill', 'black');
+
+                svg.appendChild(polygon);
+                button.appendChild(svg);
+
+                // Add the button to the container
+                buttonContainer.appendChild(button);
+            });
+        }
+
+        // Call function to create shape buttons dynamically
+        createShapeButtons();
+    </script>
+</body>
+
+</html>

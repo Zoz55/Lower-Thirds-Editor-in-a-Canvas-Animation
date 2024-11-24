@@ -84,6 +84,10 @@ To ensure that the editor works offline, you'll need to manage the font families
 - If you want to use the font families listed in the sample `fontnames.txt` file, you need to install the `ttf.zip` files on your operating system.
 - All `.ttf` files of `ttf.zip` have been downloaded from [fonts.google.com](https://fonts.google.com).
 
+The image below shows the editor interface with a toolbar for editing options, a canvas settings panel on the left and a central canvas workspace displaying customizable text and decorative elements.
+
+![image](https://github.com/ManolisMariakakis/Lower-Thirds-Editor-in-a-Canvas-Animation/blob/main/editor.png)
+
 ---
 
 ## The **Control Panel (`control_panel.html`)**
@@ -119,6 +123,9 @@ file1.json
 file2.json
 file3.json
 ```
+The image below displays the control panel interface with rows corresponding to JSON file names and columns for animation actions. Each row represents a JSON file (e.g., sample1.json, sample2.json, sample3.json), and each column contains buttons for triggering specific animation-related actions like "Animate Action," "Reverse Animate," and directional animation reversals ("Reverse Outside-Left," "Reverse Outside-Bottom," "Reverse Outside-Right," "Reverse Fade-Out"). The buttons are styled with icons indicating play or reverse actions for easy identification.
+
+![image](https://github.com/ManolisMariakakis/Lower-Thirds-Editor-in-a-Canvas-Animation/blob/main/panel.png)
 
 ## The **Animation Viewer (`canvas.html`)**
 

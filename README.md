@@ -160,18 +160,18 @@ Animation Viewer is an animation system for JSON data on an HTML canvas. It leve
 
 4. **Custom Object Metadata**:
 
-The custom data represents the status of the object at its starting position ("from" position) before it transitions to its final state (original status) during the animation. These attributes define how the object behaves and appears at the beginning of the animation and determine the transformation it undergoes to reach its original state.
+   The custom data represents the status of the object at its starting position ("from" position) before it transitions to its final state (original status) during the animation. These attributes define how the     object behaves and appears at the beginning of the animation and determine the transformation it undergoes to reach its original state.
 
-Key attributes include:
-- `data-duration`: Duration of the animation in seconds.
-- `data-ease`: Easing function for a smooth transition.
-- `data-delay`: Delay before the animation starts, in seconds.
-- `data-position`: Starting position of the object (e.g., outside-left).
-- `data-opacity`: Initial opacity of the object.
-- `data-distance`: Distance the object travels from its starting position (optional - must be selected `inside` starting position).
-- `data-scalex`: Initial scale along the X-axis.
-- `data-scaley`: Initial scale along the Y-axis.
-- `data-rotation`: Initial rotation angle of the object in degrees.
+   Key attributes include:
+   - `data-duration`: Duration of the animation in seconds.
+   - `data-ease`: Easing function for a smooth transition.
+   - `data-delay`: Delay before the animation starts, in seconds.
+   - `data-position`: Starting position of the object (e.g., outside-left).
+   - `data-opacity`: Initial opacity of the object.
+   - `data-distance`: Distance the object travels from its starting position (optional - must be selected `inside` starting position).
+   - `data-scalex`: Initial scale along the X-axis.
+   - `data-scaley`: Initial scale along the Y-axis.
+   -  `data-rotation`: Initial rotation angle of the object in degrees.
 
 ---
 

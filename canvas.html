@@ -1,326 +1,527 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
     <title>Canvas</title>
-    <meta name="description"
-        content="https://github.com/ManolisMariakakis/Lower-Thirds-Editor-in-a-Canvas-Animation?tab=GPL-3.0-1-ov-file#readme">
-    <link rel="icon" href="libs/favicon.ico" type="image/x-icon">
+    <meta
+      name="description"
+      content="https://github.com/ManolisMariakakis/Lower-Thirds-Editor-in-a-Canvas-Animation?tab=GPL-3.0-1-ov-file#readme" />
+    <link
+      rel="icon"
+      href="libs/favicon.ico"
+      type="image/x-icon" />
     <script src="libs/fabric.min.js"></script>
     <script src="libs/gsap.min.js"></script>
-</head>
+  </head>
 
-<body>
-    <div id="canvas-container" style="display:grid; align-items: end;justify-items: start;">
-        <canvas id="canvas"></canvas>
+  <body>
+    <div
+      id="canvas-container"
+      style="
+        display: grid;
+        align-items: end;
+        justify-items: start;
+      ">
+      <canvas id="canvas"></canvas>
     </div>
     <script>
-        const canvasElement = document.getElementById('canvas');
-        let canvas;
+      const canvasElement =
+        document.getElementById("canvas");
+      let canvas;
 
-        // Initialize the BroadcastChannel
-        const broadcastChannel = new BroadcastChannel('channelName');
+      //this version is made for salah
+      // Initialize the BroadcastChannel
+      const broadcastChannel =
+        new BroadcastChannel("channelName");
 
-        // Define reverse animation actions
-        const reverseTypes = ["Reverse Animate", "Reverse Outside-Left", "Reverse Outside-Bottom", "Reverse Outside-Right", "Reverse Fade-Out"];
+      // Define reverse animation actions
+      const reverseTypes = [
+        "Reverse Animate",
+        "Reverse Outside-Left",
+        "Reverse Outside-Bottom",
+        "Reverse Outside-Right",
+        "Reverse Fade-Out",
+      ];
 
-        // Listen for messages from the BroadcastChannel
-        broadcastChannel.onmessage = (event) => {
-            const { action, jsonFile, jsonReverse, reverseType } = event.data;
-            // If message contains jsonFile, reload the page with that JSON file
-            if (jsonFile) {
-                window.location.href = `${window.location.origin}${window.location.pathname}?json=${encodeURIComponent(jsonFile)}`;
-            }
-
-            // If message contains jsonReverse and a reverseType, handle reverse animation
-            if (jsonReverse && reverseTypes.includes(reverseType)) {
-                performReverseAnimation(reverseType);
-            }
-        };
-
-        // Function to perform reverse animations based on reverseType
-        function performReverseAnimation(reverseType) {
-            canvas.getObjects().forEach(obj => {
-                // Apply specific reverse animation logic based on the reverseType
-                switch (reverseType) {
-                    case "Reverse Animate":
-                        //gsap.to(obj, { duration: obj['data-duration'], opacity: 0, onUpdate: () => canvas.renderAll() });
-                        canvas.getObjects().forEach(obj => {
-                            const startPos = getStartPosition(obj);
-                            gsap.to(obj, {
-                                duration: obj['data-duration'],
-                                delay: obj['data-delay'],
-                                left: startPos.left,
-                                top: startPos.top,
-                                opacity: 0,//obj['data-opacity'],
-                                scaleX: obj['data-scalex'] * obj.scaleX,
-                                scaleY: obj['data-scaley'] * obj.scaleY,
-                                angle: obj['data-rotation'],
-                                ease: obj['data-ease'],
-                                onUpdate: () => canvas.renderAll(),
-                                onComplete: () => {
-                                    obj.set({ visible: false });
-                                    canvas.renderAll();
-                                    // canvas.clear();
-                                }
-                            });
-                        });
-                        break;
-                    case "Reverse Fade-Out":
-                        canvas.getObjects().forEach(obj => {
-                            gsap.to(obj, {
-                                duration: 1,
-                                opacity: 0,
-                                ease: "power2.out",
-                                onUpdate: () => canvas.renderAll(),
-                                onComplete: () => {
-                                    obj.set({ visible: false });
-                                    canvas.renderAll();
-                                }
-                            });
-                        });
-                        break;
-                    case "Reverse Outside-Left":
-                        //gsap.to(obj, { duration: obj['data-duration'], left: -obj.width, onUpdate: () => canvas.renderAll() });
-                        canvas.getObjects().forEach(obj => {
-                            gsap.to(obj, {
-                                top: obj.top,
-                                left: 0 - obj.width,
-                                duration: obj['data-duration'],
-                                delay: obj['data-delay'],
-                                opacity: 0,
-                                scaleX: obj['data-scalex'] * obj.scaleX,
-                                scaleY: obj['data-scaley'] * obj.scaleY,
-                                angle: obj['data-rotation'],
-                                ease: obj['data-ease'],
-                                onUpdate: () => canvas.renderAll(),
-                                onComplete: () => {
-                                    obj.set({ visible: false });
-                                    canvas.renderAll();
-                                }
-                            });
-                        });
-                        break;
-                    case "Reverse Outside-Bottom":
-                        //gsap.to(obj, { duration: obj['data-duration'], top: canvas.height + obj.height, onUpdate: () => canvas.renderAll() });
-                        canvas.getObjects().forEach(obj => {
-                            gsap.to(obj, {
-                                top: canvas.height,
-                                left: obj.left,
-                                duration: obj['data-duration'],
-                                delay: obj['data-delay'],
-                                opacity: 0,
-                                scaleX: obj['data-scalex'] * obj.scaleX,
-                                scaleY: obj['data-scaley'] * obj.scaleY,
-                                angle: obj['data-rotation'],
-                                ease: obj['data-ease'],
-                                onUpdate: () => canvas.renderAll(),
-                                onComplete: () => {
-                                    obj.set({ visible: false });
-                                    canvas.renderAll();
-                                }
-                            });
-                        });
-                        break;
-                    case "Reverse Outside-Right":
-                        //gsap.to(obj, { duration: obj['data-duration'], left: canvas.width + obj.width, onUpdate: () => canvas.renderAll() });
-                        canvas.getObjects().forEach(obj => {
-                            gsap.to(obj, {
-                                top: obj.top,
-                                left: canvas.width,
-                                duration: obj['data-duration'],
-                                delay: obj['data-delay'],
-                                opacity: 0,
-                                scaleX: obj['data-scalex'] * obj.scaleX,
-                                scaleY: obj['data-scaley'] * obj.scaleY,
-                                angle: obj['data-rotation'],
-                                ease: obj['data-ease'],
-                                onUpdate: () => canvas.renderAll(),
-                                onComplete: () => {
-                                    obj.set({ visible: false });
-                                    canvas.renderAll();
-                                }
-                            });
-                        });
-                        break;
-                }
-            });
+      // Listen for messages from the BroadcastChannel
+      broadcastChannel.onmessage = (event) => {
+        const {
+          action,
+          jsonFile,
+          jsonReverse,
+          reverseType,
+        } = event.data;
+        // If message contains jsonFile, reload the page with that JSON file
+        if (jsonFile) {
+          window.location.href = `${
+            window.location.origin
+          }${
+            window.location.pathname
+          }?json=${encodeURIComponent(jsonFile)}`;
         }
 
-        // Override toObject for fabric.Textbox
-        fabric.Textbox.prototype.toObject = (function (toObject) {
-            return function (propertiesToInclude) {
-                const textboxObject = Object.assign({}, toObject.call(this, propertiesToInclude));
-                const metadata = {
-                    id: this.id || null,
-                    customshape: this.customshape || 'shape',
-                    'data-duration': this['data-duration'] || '0',
-                    'data-ease': this['data-ease'] || 'Power0.easeNone',
-                    'data-delay': this['data-delay'] || '0',
-                    'data-position': this['data-position'] || 'outside-left',
-                    'data-opacity': this['data-opacity'] || '1',
-                    'data-distance': this['data-distance'] || '0',
-                    'data-scalex': this['data-scalex'] || '1',
-                    'data-scaley': this['data-scaley'] || '1',
-                    'data-rotation': this['data-rotation'] || '0',
-                    capsuleRadiusX: this.capsuleRadiusX || null,
-                    capsuleRadiusY: this.capsuleRadiusY || null,
-                    capsuleAngle: this.capsuleAngle || null,
-                    capsuleLineLength: this.capsuleLineLength || null,
-                    roundedWidth: this.roundedWidth || null,
-                    roundedHeight: this.roundedHeight || null,
-                    roundedRadius: this.roundedRadius || null,
-                    cornerColor: this.cornerColor || null,
-                    borderColor: this.borderColor || null,
-                };
-                return Object.assign({}, metadata, textboxObject);
-            };
-        })(fabric.Textbox.prototype.toObject);
-
-        // Override toObject for general fabric.Object instances
-        fabric.Object.prototype.toObject = (function (toObject) {
-            return function (propertiesToInclude) {
-                const objectProperties = Object.assign({}, toObject.call(this, propertiesToInclude));
-                const metadata = {
-                    id: this.id || null,
-                    customshape: this.customshape || 'shape',
-                    'data-duration': this['data-duration'] || '0',
-                    'data-ease': this['data-ease'] || 'Power0.easeNone',
-                    'data-delay': this['data-delay'] || '0',
-                    'data-position': this['data-position'] || 'outside-left',
-                    'data-opacity': this['data-opacity'] || '1',
-                    'data-distance': this['data-distance'] || '0',
-                    'data-scalex': this['data-scalex'] || '1',
-                    'data-scaley': this['data-scaley'] || '1',
-                    'data-rotation': this['data-rotation'] || '0',
-                    capsuleRadiusX: this.capsuleRadiusX || null,
-                    capsuleRadiusY: this.capsuleRadiusY || null,
-                    capsuleAngle: this.capsuleAngle || null,
-                    capsuleLineLength: this.capsuleLineLength || null,
-                    roundedWidth: this.roundedWidth || null,
-                    roundedHeight: this.roundedHeight || null,
-                    roundedRadius: this.roundedRadius || null,
-                    cornerColor: this.cornerColor || null,
-                    borderColor: this.borderColor || null,
-                };
-                return Object.assign({}, metadata, objectProperties);
-            };
-        })(fabric.Object.prototype.toObject);
-
-        // Function to get URL parameters
-        function getURLParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+        // If message contains jsonReverse and a reverseType, handle reverse animation
+        if (
+          jsonReverse &&
+          reverseTypes.includes(reverseType)
+        ) {
+          performReverseAnimation(reverseType);
         }
+      };
 
-        // Function to get the starting position based on the selected option
-        function getStartPosition(rect) {
-            const position = rect['data-position'];
-            const offsetDistance = rect['data-distance'];
-
-            switch (position) {
-                // Inside Positions
-                case 'inside-left':
-                    return { left: rect.left - offsetDistance, top: rect.top };
-                case 'inside-top-left':
-                    return { left: rect.left - offsetDistance, top: rect.top - offsetDistance };
-                case 'inside-top':
-                    return { left: rect.left, top: rect.top - offsetDistance };
-                case 'inside-top-right':
-                    return { left: rect.left + offsetDistance, top: rect.top - offsetDistance };
-                case 'inside-right':
-                    return { left: rect.left + offsetDistance, top: rect.top };
-                case 'inside-bottom-right':
-                    return { left: rect.left + offsetDistance, top: rect.top + offsetDistance };
-                case 'inside-bottom':
-                    return { left: rect.left, top: rect.top + offsetDistance };
-                case 'inside-bottom-left':
-                    return { left: rect.left - offsetDistance, top: rect.top + offsetDistance };
-
-                // Outside Positions
-                case 'outside-left':
-                    return { left: 0 - rect.width, top: rect.top };
-                case 'outside-top-left':
-                    return { left: 0 - rect.width, top: 0 - rect.height };
-                case 'outside-top':
-                    return { left: rect.left, top: 0 - rect.height };
-                case 'outside-top-right':
-                    return { left: canvas.width, top: 0 - rect.height };
-                case 'outside-right':
-                    return { left: canvas.width, top: rect.top };
-                case 'outside-bottom-right':
-                    return { left: canvas.width, top: canvas.height };
-                case 'outside-bottom':
-                    return { left: rect.left, top: canvas.height };
-                case 'outside-bottom-left':
-                    return { left: 0 - rect.width, top: canvas.height };
-                default:
-                    return { left: rect.left, top: rect.top };
-            }
-        }
-
-        // Animate objects concurrently after loading
-        function animateObjectsConcurrently() {
-            const animations = canvas.getObjects().map(obj => {
-                const startPos = getStartPosition(obj);
-                obj.set({ visible: true });
-                canvas.renderAll();
-
-                return gsap.from(obj, {
-                    duration: obj['data-duration'],
-                    delay: obj['data-delay'],
+      // Function to perform reverse animations based on reverseType
+      function performReverseAnimation(
+        reverseType
+      ) {
+        canvas.getObjects().forEach((obj) => {
+          // Apply specific reverse animation logic based on the reverseType
+          switch (reverseType) {
+            case "Reverse Animate":
+              //gsap.to(obj, { duration: obj['data-duration'], opacity: 0, onUpdate: () => canvas.renderAll() });
+              canvas
+                .getObjects()
+                .forEach((obj) => {
+                  const startPos =
+                    getStartPosition(obj);
+                  gsap.to(obj, {
+                    duration:
+                      obj["data-duration"],
+                    delay: obj["data-delay"],
                     left: startPos.left,
                     top: startPos.top,
-                    opacity: obj['data-opacity'],
-                    scaleX: obj['data-scalex'] * obj.scaleX,
-                    scaleY: obj['data-scaley'] * obj.scaleY,
-                    angle: obj['data-rotation'],
-                    ease: obj['data-ease'],
-                    onUpdate: () => canvas.renderAll()
+                    opacity: 0, //obj['data-opacity'],
+                    scaleX:
+                      obj["data-scalex"] *
+                      obj.scaleX,
+                    scaleY:
+                      obj["data-scaley"] *
+                      obj.scaleY,
+                    angle: obj["data-rotation"],
+                    ease: obj["data-ease"],
+                    onUpdate: () =>
+                      canvas.renderAll(),
+                    onComplete: () => {
+                      obj.set({ visible: false });
+                      canvas.renderAll();
+                      // canvas.clear();
+                    },
+                  });
                 });
-            });
+              break;
+            case "Reverse Fade-Out":
+              canvas
+                .getObjects()
+                .forEach((obj) => {
+                  gsap.to(obj, {
+                    duration: 1,
+                    opacity: 0,
+                    ease: "power2.out",
+                    onUpdate: () =>
+                      canvas.renderAll(),
+                    onComplete: () => {
+                      obj.set({ visible: false });
+                      canvas.renderAll();
+                    },
+                  });
+                });
+              break;
+            case "Reverse Outside-Left":
+              //gsap.to(obj, { duration: obj['data-duration'], left: -obj.width, onUpdate: () => canvas.renderAll() });
+              canvas
+                .getObjects()
+                .forEach((obj) => {
+                  gsap.to(obj, {
+                    top: obj.top,
+                    left: 0 - obj.width,
+                    duration:
+                      obj["data-duration"],
+                    delay: obj["data-delay"],
+                    opacity: 0,
+                    scaleX:
+                      obj["data-scalex"] *
+                      obj.scaleX,
+                    scaleY:
+                      obj["data-scaley"] *
+                      obj.scaleY,
+                    angle: obj["data-rotation"],
+                    ease: obj["data-ease"],
+                    onUpdate: () =>
+                      canvas.renderAll(),
+                    onComplete: () => {
+                      obj.set({ visible: false });
+                      canvas.renderAll();
+                    },
+                  });
+                });
+              break;
+            case "Reverse Outside-Bottom":
+              //gsap.to(obj, { duration: obj['data-duration'], top: canvas.height + obj.height, onUpdate: () => canvas.renderAll() });
+              canvas
+                .getObjects()
+                .forEach((obj) => {
+                  gsap.to(obj, {
+                    top: canvas.height,
+                    left: obj.left,
+                    duration:
+                      obj["data-duration"],
+                    delay: obj["data-delay"],
+                    opacity: 0,
+                    scaleX:
+                      obj["data-scalex"] *
+                      obj.scaleX,
+                    scaleY:
+                      obj["data-scaley"] *
+                      obj.scaleY,
+                    angle: obj["data-rotation"],
+                    ease: obj["data-ease"],
+                    onUpdate: () =>
+                      canvas.renderAll(),
+                    onComplete: () => {
+                      obj.set({ visible: false });
+                      canvas.renderAll();
+                    },
+                  });
+                });
+              break;
+            case "Reverse Outside-Right":
+              //gsap.to(obj, { duration: obj['data-duration'], left: canvas.width + obj.width, onUpdate: () => canvas.renderAll() });
+              canvas
+                .getObjects()
+                .forEach((obj) => {
+                  gsap.to(obj, {
+                    top: obj.top,
+                    left: canvas.width,
+                    duration:
+                      obj["data-duration"],
+                    delay: obj["data-delay"],
+                    opacity: 0,
+                    scaleX:
+                      obj["data-scalex"] *
+                      obj.scaleX,
+                    scaleY:
+                      obj["data-scaley"] *
+                      obj.scaleY,
+                    angle: obj["data-rotation"],
+                    ease: obj["data-ease"],
+                    onUpdate: () =>
+                      canvas.renderAll(),
+                    onComplete: () => {
+                      obj.set({ visible: false });
+                      canvas.renderAll();
+                    },
+                  });
+                });
+              break;
+          }
+        });
+      }
 
-            // Send broadcast message after all animations complete
-            Promise.all(animations.map(anim => anim.eventCallback('onComplete'))).then(() => {
-                const jsonFile = getURLParameter('json');
-                broadcastChannel.postMessage({ action: 'loaded', jsonFile: jsonFile });
+      // Override toObject for fabric.Textbox
+      fabric.Textbox.prototype.toObject =
+        (function (toObject) {
+          return function (propertiesToInclude) {
+            const textboxObject = Object.assign(
+              {},
+              toObject.call(
+                this,
+                propertiesToInclude
+              )
+            );
+            const metadata = {
+              id: this.id || null,
+              customshape:
+                this.customshape || "shape",
+              "data-duration":
+                this["data-duration"] || "0",
+              "data-ease":
+                this["data-ease"] ||
+                "Power0.easeNone",
+              "data-delay":
+                this["data-delay"] || "0",
+              "data-position":
+                this["data-position"] ||
+                "outside-left",
+              "data-opacity":
+                this["data-opacity"] || "1",
+              "data-distance":
+                this["data-distance"] || "0",
+              "data-scalex":
+                this["data-scalex"] || "1",
+              "data-scaley":
+                this["data-scaley"] || "1",
+              "data-rotation":
+                this["data-rotation"] || "0",
+              capsuleRadiusX:
+                this.capsuleRadiusX || null,
+              capsuleRadiusY:
+                this.capsuleRadiusY || null,
+              capsuleAngle:
+                this.capsuleAngle || null,
+              capsuleLineLength:
+                this.capsuleLineLength || null,
+              roundedWidth:
+                this.roundedWidth || null,
+              roundedHeight:
+                this.roundedHeight || null,
+              roundedRadius:
+                this.roundedRadius || null,
+              cornerColor:
+                this.cornerColor || null,
+              borderColor:
+                this.borderColor || null,
+            };
+            return Object.assign(
+              {},
+              metadata,
+              textboxObject
+            );
+          };
+        })(fabric.Textbox.prototype.toObject);
+
+      // Override toObject for general fabric.Object instances
+      fabric.Object.prototype.toObject =
+        (function (toObject) {
+          return function (propertiesToInclude) {
+            const objectProperties =
+              Object.assign(
+                {},
+                toObject.call(
+                  this,
+                  propertiesToInclude
+                )
+              );
+            const metadata = {
+              id: this.id || null,
+              customshape:
+                this.customshape || "shape",
+              "data-duration":
+                this["data-duration"] || "0",
+              "data-ease":
+                this["data-ease"] ||
+                "Power0.easeNone",
+              "data-delay":
+                this["data-delay"] || "0",
+              "data-position":
+                this["data-position"] ||
+                "outside-left",
+              "data-opacity":
+                this["data-opacity"] || "1",
+              "data-distance":
+                this["data-distance"] || "0",
+              "data-scalex":
+                this["data-scalex"] || "1",
+              "data-scaley":
+                this["data-scaley"] || "1",
+              "data-rotation":
+                this["data-rotation"] || "0",
+              capsuleRadiusX:
+                this.capsuleRadiusX || null,
+              capsuleRadiusY:
+                this.capsuleRadiusY || null,
+              capsuleAngle:
+                this.capsuleAngle || null,
+              capsuleLineLength:
+                this.capsuleLineLength || null,
+              roundedWidth:
+                this.roundedWidth || null,
+              roundedHeight:
+                this.roundedHeight || null,
+              roundedRadius:
+                this.roundedRadius || null,
+              cornerColor:
+                this.cornerColor || null,
+              borderColor:
+                this.borderColor || null,
+            };
+            return Object.assign(
+              {},
+              metadata,
+              objectProperties
+            );
+          };
+        })(fabric.Object.prototype.toObject);
+
+      // Function to get URL parameters
+      function getURLParameter(name) {
+        const urlParams = new URLSearchParams(
+          window.location.search
+        );
+        return urlParams.get(name);
+      }
+
+      // Function to get the starting position based on the selected option
+      function getStartPosition(rect) {
+        const position = rect["data-position"];
+        const offsetDistance =
+          rect["data-distance"];
+
+        switch (position) {
+          // Inside Positions
+          case "inside-left":
+            return {
+              left: rect.left - offsetDistance,
+              top: rect.top,
+            };
+          case "inside-top-left":
+            return {
+              left: rect.left - offsetDistance,
+              top: rect.top - offsetDistance,
+            };
+          case "inside-top":
+            return {
+              left: rect.left,
+              top: rect.top - offsetDistance,
+            };
+          case "inside-top-right":
+            return {
+              left: rect.left + offsetDistance,
+              top: rect.top - offsetDistance,
+            };
+          case "inside-right":
+            return {
+              left: rect.left + offsetDistance,
+              top: rect.top,
+            };
+          case "inside-bottom-right":
+            return {
+              left: rect.left + offsetDistance,
+              top: rect.top + offsetDistance,
+            };
+          case "inside-bottom":
+            return {
+              left: rect.left,
+              top: rect.top + offsetDistance,
+            };
+          case "inside-bottom-left":
+            return {
+              left: rect.left - offsetDistance,
+              top: rect.top + offsetDistance,
+            };
+
+          // Outside Positions
+          case "outside-left":
+            return {
+              left: 0 - rect.width,
+              top: rect.top,
+            };
+          case "outside-top-left":
+            return {
+              left: 0 - rect.width,
+              top: 0 - rect.height,
+            };
+          case "outside-top":
+            return {
+              left: rect.left,
+              top: 0 - rect.height,
+            };
+          case "outside-top-right":
+            return {
+              left: canvas.width,
+              top: 0 - rect.height,
+            };
+          case "outside-right":
+            return {
+              left: canvas.width,
+              top: rect.top,
+            };
+          case "outside-bottom-right":
+            return {
+              left: canvas.width,
+              top: canvas.height,
+            };
+          case "outside-bottom":
+            return {
+              left: rect.left,
+              top: canvas.height,
+            };
+          case "outside-bottom-left":
+            return {
+              left: 0 - rect.width,
+              top: canvas.height,
+            };
+          default:
+            return {
+              left: rect.left,
+              top: rect.top,
+            };
+        }
+      }
+
+      // Animate objects concurrently after loading
+      function animateObjectsConcurrently() {
+        const animations = canvas
+          .getObjects()
+          .map((obj) => {
+            const startPos =
+              getStartPosition(obj);
+            obj.set({ visible: true });
+            canvas.renderAll();
+
+            return gsap.from(obj, {
+              duration: obj["data-duration"],
+              delay: obj["data-delay"],
+              left: startPos.left,
+              top: startPos.top,
+              opacity: obj["data-opacity"],
+              scaleX:
+                obj["data-scalex"] * obj.scaleX,
+              scaleY:
+                obj["data-scaley"] * obj.scaleY,
+              angle: obj["data-rotation"],
+              ease: obj["data-ease"],
+              onUpdate: () => canvas.renderAll(),
             });
+          });
+
+        // Send broadcast message after all animations complete
+        Promise.all(
+          animations.map((anim) =>
+            anim.eventCallback("onComplete")
+          )
+        ).then(() => {
+          const jsonFile =
+            getURLParameter("json");
+          broadcastChannel.postMessage({
+            action: "loaded",
+            jsonFile: jsonFile,
+          });
+        });
+      }
+
+      // Load JSON data from URL parameter
+      async function loadJSONFromURL() {
+        const jsonFile =
+          "jsonfiles/" + getURLParameter("json");
+        if (!jsonFile) {
+          return;
         }
 
-        // Load JSON data from URL parameter
-        async function loadJSONFromURL() {
-            const jsonFile = 'jsonfiles/' + getURLParameter('json');
-            if (!jsonFile) {
-                return;
-            }
+        try {
+          const response = await fetch(jsonFile);
+          const jsonData = await response.json();
 
-            try {
-                const response = await fetch(jsonFile);
-                const jsonData = await response.json();
+          // Set canvas dimensions based on JSON
+          canvasElement.width = jsonData.width;
+          canvasElement.height = jsonData.height;
 
-                // Set canvas dimensions based on JSON
-                canvasElement.width = jsonData.width;
-                canvasElement.height = jsonData.height;
-
-                // Initialize Fabric.js canvas with dynamic size
-                canvas = new fabric.Canvas('canvas', {
-                    width: jsonData.width,
-                    height: jsonData.height
-                });
-                canvas.loadFromJSON(jsonData, () => {
-                    canvas.renderAll();
-                    animateObjectsConcurrently();
-                });
-
-            } catch (error) {
-                console.error(error);
-            }
+          // Initialize Fabric.js canvas with dynamic size
+          canvas = new fabric.Canvas("canvas", {
+            width: jsonData.width,
+            height: jsonData.height,
+          });
+          canvas.loadFromJSON(jsonData, () => {
+            canvas.renderAll();
+            animateObjectsConcurrently();
+          });
+        } catch (error) {
+          console.error(error);
         }
-        // Run the function on page load
-        loadJSONFromURL();
+      }
+      // Run the function on page load
+      loadJSONFromURL();
     </script>
-</body>
-
+  </body>
 </html>
